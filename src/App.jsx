@@ -5,7 +5,7 @@ import Spinner from "./components/Spinner";
 
 export default function App() {
   const [query, setQuery] = useState("");
-  const debouncedQuery = useDebounce(query, 500);
+  const debouncedQuery = useDebounce(query, 5000); //5 seconds
   const { data: movies, isLoading, isError, error } = useMovies(debouncedQuery);
 
   return (
@@ -21,9 +21,20 @@ export default function App() {
           className="w-full p-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
 
-        {isLoading && <p className="mt-6 text-gray-600">{isLoading && <Spinner />}
-</p>}
-        {isError && <p className="mt-6 text-red-600">{error.message}</p>}
+        {isLoading && (
+          <div className="mt-6 text-gray-600">
+            <Spinner />
+          </div>
+        )}
+
+        {isError && (
+          <div className="mt-6 text-red-600">
+            <p>{error.message}</p>
+            <p className="text-sm mt-1 text-gray-500">
+              Try being more specific with your search.
+            </p>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6 mt-10">
           {movies?.map((movie) => (
@@ -32,7 +43,11 @@ export default function App() {
               className="bg-white rounded shadow p-4 flex flex-col items-center"
             >
               <img
-                src={movie.Poster !== "N/A" ? movie.Poster : "https://via.placeholder.com/150"}
+                src={
+                  movie.Poster !== "N/A"
+                    ? movie.Poster
+                    : "https://via.placeholder.com/150"
+                }
                 alt={movie.Title}
                 className="w-full h-64 object-cover mb-4 rounded"
               />

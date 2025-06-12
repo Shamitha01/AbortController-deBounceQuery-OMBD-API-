@@ -1,16 +1,30 @@
-const API_KEY = "f84fc31d"; // replace with your real key
+import axios from "axios";
+
+const API_KEY = "f84fc31d";
 
 export async function fetchMovies(query, signal) {
-  const res = await fetch(
-    `https://www.omdbapi.com/?apikey=${API_KEY}&s=${query}`,
-    { signal }
-  );
+  console.log("📦 fetching movies for:", query); // 👈 Add here
 
-  if (!res.ok) throw new Error("Failed to fetch movies");
+  try {
+    const response = await axios.get("https://www.omdbapi.com/", {
+      params: {
+        apikey: API_KEY,
+        s: query,
+      },
+      signal,
+    });
 
-  const data = await res.json();
+    const data = response.data;
 
-  if (data.Response === "False") throw new Error(data.Error || "No results found");
+    if (data.Response === "False") {
+      throw new Error(data.Error || "No results found");
+    }
 
-  return data.Search; // array of movie objects
+    return data.Search;
+  } catch (err) {
+    if (axios.isCancel(err)) {
+      console.log("🚫 Request canceled:", err.message);
+    }
+    throw err;
+  }
 }
